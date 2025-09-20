@@ -141,7 +141,7 @@ const Phones = () => {
               ))}
             </div>
             <div>
-              <span>Includes delivery?</span>
+              <b className="text-blue-500">Includes delivery?</b>
               <span>{ item.hasDelivery ? " Yes" : " No"}</span>
             </div>
             <div className="flex justify-center gap-5 mt-3">
