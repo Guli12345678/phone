@@ -22,7 +22,6 @@ const Phones = () => {
     createPhone.mutate(phone);
     setTitle("");
     setPrice("");
-    setImage("");
     setMemory("");
   };
   const handleAddMemory = () => {
