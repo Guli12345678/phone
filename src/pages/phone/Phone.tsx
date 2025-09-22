@@ -1,10 +1,20 @@
-import { memo, useState, type FormEvent } from "react";
+
+import { memo, useEffect, useState, type FormEvent } from "react";
 import { usePhone } from "../../api/hooks/usePhone";
 import { Button, Input, Radio } from "antd";
+
+interface IProduct {
+  id: string;
+  title: string;
+  price: number;
+  image: string;
+  memories: string[];
+  hasDelivery: boolean;
+}
 const Phones = () => {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<IProduct | null>(null);
   const [image, setImage] = useState(
     "https://pub-7be1d45c4a744f86846c80e90df909eb.r2.dev/files/36bc02b0-6e32-428c-860f-c775eb5aa3d4.png"
   );
@@ -14,12 +24,22 @@ const Phones = () => {
   const { getPhone, createPhone, deletePhone, updatePhone } = usePhone();
   const { data, isLoading } = getPhone();
 
+  useEffect(() => {
+    if (editingItem) {
+      setTitle(editingItem.title);
+      setPrice(editingItem.price.toString());
+      setImage(editingItem.image);
+      setMemories(editingItem.memories);
+      setHasDelivery(editingItem.hasDelivery);
+    }
+  }, [editingItem]);
+
   const handleDelete = (id: string) => {
     deletePhone.mutate(id);
   };
 
-  const handleSave = (item: any) => {
-    setEditingItem(item);
+  const handleSave = (body: IProduct) => {
+    setEditingItem(body);
   };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,8 +51,8 @@ const Phones = () => {
       hasDelivery,
     };
     if (editingItem) {
-      updatePhone.mutate(phone);
-      setEditingItem(null)
+      updatePhone.mutate({ id: editingItem.id, ...phone });
+      setEditingItem(null);
     } else {
       createPhone.mutate(phone);
     }
@@ -123,9 +143,15 @@ const Phones = () => {
           <Radio value={true}>Yes</Radio>
           <Radio value={false}>No</Radio>
         </Radio.Group>
-        <Button htmlType="submit" className="w-full" type="primary">
-          {editingItem ? "Save" : "Submit"}
-        </Button>
+        {editingItem ? (
+          <Button htmlType="submit" className="w-full" type="primary">
+            Save
+          </Button>
+        ) : (
+          <Button htmlType="submit" className="w-full" type="primary">
+            Submit
+          </Button>
+        )}
       </form>
       <div className="flex flex-wrap justify-center gap-10 justify-self-center mt-20">
         {data?.map((item: any) => (
@@ -145,7 +171,7 @@ const Phones = () => {
             </span>
             <br />
             <div>
-              <b className="text-blue-500">Memory: </b>{" "}
+              <b className="text-blue-500">Memory: </b>
               {item.memories.map((i: string, idx: number) => (
                 <div
                   className="px-3 py-1  rounded-full text-sm flex justify-center leading-1.5"
