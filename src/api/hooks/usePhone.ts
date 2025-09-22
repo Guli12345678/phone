@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api";
 
 export const usePhone = () => {
-  const client = useQueryClient();  
+  const client = useQueryClient();
 
   const getPhone = () =>
     useQuery({
@@ -11,8 +11,7 @@ export const usePhone = () => {
     });
 
   const createPhone = useMutation({
-    mutationFn: (body: any) =>
-      api.post("phone", body).then((res) => res.data),
+    mutationFn: (body: any) => api.post("phone", body).then((res) => res.data),
     onSuccess: (_res) => {
       client.invalidateQueries({ queryKey: ["phoneKey"] });
     },
@@ -20,12 +19,18 @@ export const usePhone = () => {
   });
 
   const deletePhone = useMutation({
-    mutationFn: (id: any) =>
-      api.delete(`phone/${id}`).then((res) => res.data),
+    mutationFn: (id: any) => api.delete(`phone/${id}`).then((res) => res.data),
+    onSuccess: (_res) => {
+      client.invalidateQueries({ queryKey: ["phoneKey"] });
+    },
+  });
+  const updatePhone = useMutation({
+    mutationFn: (body: any) =>
+      api.put(`phone/${body.id}`, body).then((res) => res.data),
     onSuccess: (_res) => {
       client.invalidateQueries({ queryKey: ["phoneKey"] });
     },
   });
 
-  return { getPhone, createPhone, deletePhone };
+  return { getPhone, createPhone, deletePhone, updatePhone };
 };

@@ -4,22 +4,38 @@ import { Button, Input, Radio } from "antd";
 const Phones = () => {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
+  const [editingItem, setEditingItem] = useState(null);
   const [image, setImage] = useState(
     "https://pub-7be1d45c4a744f86846c80e90df909eb.r2.dev/files/36bc02b0-6e32-428c-860f-c775eb5aa3d4.png"
   );
   const [memory, setMemory] = useState<string>("");
   const [hasDelivery, setHasDelivery] = useState(true);
   const [memories, setMemories] = useState<string[]>([]);
-  const { getPhone, createPhone, deletePhone } = usePhone();
+  const { getPhone, createPhone, deletePhone, updatePhone } = usePhone();
   const { data, isLoading } = getPhone();
 
   const handleDelete = (id: string) => {
     deletePhone.mutate(id);
   };
+
+  const handleSave = (item: any) => {
+    setEditingItem(item);
+  };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const phone = { title, price: Number(price), image, memories, hasDelivery };
-    createPhone.mutate(phone);
+    const phone = {
+      title,
+      price: Number(price),
+      image,
+      memories,
+      hasDelivery,
+    };
+    if (editingItem) {
+      updatePhone.mutate(phone);
+      setEditingItem(null)
+    } else {
+      createPhone.mutate(phone);
+    }
     setTitle("");
     setPrice("");
     setMemory("");
@@ -108,7 +124,7 @@ const Phones = () => {
           <Radio value={false}>No</Radio>
         </Radio.Group>
         <Button htmlType="submit" className="w-full" type="primary">
-          submit
+          {editingItem ? "Save" : "Submit"}
         </Button>
       </form>
       <div className="flex flex-wrap justify-center gap-10 justify-self-center mt-20">
@@ -141,7 +157,7 @@ const Phones = () => {
             </div>
             <div>
               <b className="text-blue-500">Includes delivery?</b>
-              <span>{ item.hasDelivery ? " Yes" : " No"}</span>
+              <span>{item.hasDelivery ? " Yes" : " No"}</span>
             </div>
             <div className="flex justify-center gap-5 mt-3">
               <Button
@@ -151,7 +167,13 @@ const Phones = () => {
               >
                 delete
               </Button>
-              <Button>update</Button>
+              <Button
+                onClick={() => {
+                  handleSave(item);
+                }}
+              >
+                update
+              </Button>
             </div>
           </div>
         ))}
