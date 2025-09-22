@@ -1,4 +1,3 @@
-
 import { memo, useEffect, useState, type FormEvent } from "react";
 import { usePhone } from "../../api/hooks/usePhone";
 import { Button, Input, Radio } from "antd";
@@ -59,6 +58,7 @@ const Phones = () => {
     setTitle("");
     setPrice("");
     setMemory("");
+    setMemories([]);
   };
   const handleAddMemory = () => {
     const exist = memories.includes(memory);
@@ -106,7 +106,7 @@ const Phones = () => {
             value={memory}
             onChange={(e) => setMemory(e.target.value)}
             className="w-full"
-            type="text"
+            type="number"
             placeholder="Enter the memory"
           ></Input>
           <button
@@ -123,7 +123,7 @@ const Phones = () => {
               className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm"
               key={idx}
             >
-              <span>{item}</span>
+              <span>{item} GB </span>
               <span
                 className="cursor-pointer"
                 onClick={() => handleRemoveMemory(idx)}
@@ -177,7 +177,7 @@ const Phones = () => {
                   className="px-3 py-1  rounded-full text-sm flex justify-center leading-1.5"
                   key={idx}
                 >
-                  <span>{i}</span>
+                  <span>{i} GB</span>
                 </div>
               ))}
             </div>
